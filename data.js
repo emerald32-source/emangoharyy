@@ -1,27 +1,29 @@
-const clientCustomName = "ايمان";
+const clientCustomName = "ايمي";
 const clientGender = "f";
-const clientEidiyaCode = "9AWDxDzDOCidgodX";
-const clientEnvelopeText = `كل عام وانتي بكل الخير يا ايمي
+const clientProfilePic = "gannah.jpg";
+const clientTargetDate = "2026-05-22T18:00";
+const clientEidiyaCode = "EID-500-VIP";
+const clientEnvelopeText = `حبيت اكون اول من يعايدك يا حته من قلبي
+كل عام وانتي بكل الخير يا ايمي
 رب يحفظك ويسعدك
 والعيد الجاي تكوني في شقتك واعيد عليكي فيها حبيبتي باذن الله 
-رب يحقق لك كل اللي بتتمنيه  وبتحلمي بيه يا  حبيبة قلبي يارب♥️♥️`;
-
+رب يحقق لك كل اللي بتتمنيه  وبتحلمي بيه ويجعل كل ايامك عيد وسعاده يا  حبيبة قلبي 🥰🥰`;
 const clientMemories = [
-    {
+     {
         "photo": "photo1.jpg",
         "caption": "بنت قلبي"
     },
     {
         "photo": "photo2.jpg",
-        "caption": "ملامحها فيها براءة الكون كله"
+        "caption": "القلب الابيض"
     },
     {
         "photo": "photo3.jpg",
-        "caption": "اطيب الناس"
+        "caption": "قلب عمتها"
     },
     {
         "photo": "photo4.jpg",
-        "caption": "اغلي الناس"
+        "caption": "حنية الدنيا"
     },
     {
         "photo": "photo5.jpg",
@@ -29,22 +31,22 @@ const clientMemories = [
     },
     {
         "photo": "photo6.jpg",
-        "caption": "عصبية الدنيا فيها بردو😂"
+        "caption": "اغلي الناس"
     },
     {
         "photo": "photo7.jpg",
-        "caption": "حنية الدنيا فيها😊"
+        "caption": "اطيب الناس"
     },
     {
         "photo": "photo8.jpg",
-        "caption": "قلب عمتها"
+        "caption": "براءة الكون"
     },
     {
         "photo": "photo9.jpg",
-        "caption": "ضحكتها  تسعد القلب"
+        "caption": "تسعد القلب"
     },
     {
         "photo": "photo10.jpg",
-        "caption": "القلب الابيض"
+        "caption": "ملكه جمال"
     }
 ];
