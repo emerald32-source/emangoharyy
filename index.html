@@ -56,6 +56,24 @@
         .floating-back-arrow { position: absolute; top: 20px; left: 15px; width: 45px; height: 45px; background-color: rgba(255, 255, 255, 0.85); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #059669; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.15); backdrop-filter: blur(5px); z-index: 2000; transition: transform 0.3s; }
         .floating-back-arrow:active { transform: scale(0.9); }
 
+        /* Custom Alert */
+        #custom-alert-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 3000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .alert-popup { background: #fff; border-radius: 22px; max-width: 350px; width: 100%; padding: 25px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 2px solid #a7f3d0; animation: alertPop 0.3s forwards; }
+        @keyframes alertPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .alert-message { color: #333; font-size: 15px; font-weight: 700; line-height: 1.8; margin: 15px 0 25px; }
+        .alert-btn { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 10px 30px; font-weight: 800; font-size: 15px; border-radius: 20px; cursor: pointer; }
+
+        /* ---------------------------------------------------- */
+        /* Eidiya Scratch Screen */
+        /* ---------------------------------------------------- */
+        #screen-eidiya { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: radial-gradient(circle, #fcd34d 0%, #d97706 100%); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 1700; opacity: 0; transition: opacity 0.8s ease; }
+        .scratch-container { position: relative; width: 300px; height: 150px; margin: 30px auto; border-radius: 15px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.3); border: 4px solid #fff; background-color: #fff; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .scratch-code-box { font-size: 24px; font-weight: 900; color: #059669; letter-spacing: 2px; }
+        .scratch-title { color: #fff; font-size: 24px; font-weight: 800; margin-bottom: 10px; text-shadow: 1px 2px 4px rgba(0,0,0,0.3); }
+        .scratch-subtitle { color: #fff; font-size: 14px; font-weight: 600; margin-bottom: 20px; }
+        #scratch-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
+        #send-eidiya-btn { display: none; background: #25D366; color: white; border: none; padding: 15px 30px; font-size: 18px; font-weight: 800; border-radius: 30px; cursor: pointer; box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4); margin-top: 30px; animation: alertPop 0.5s forwards; }
+
         /* ---------------------------------------------------- */
         /* 4. Envelope Screen */
         /* ---------------------------------------------------- */
@@ -151,6 +169,14 @@
         <div class="loading-track"><div class="loading-fill"></div></div>
     </div>
 
+    <div id="custom-alert-modal">
+        <div class="alert-popup">
+            <div style="font-size: 35px;">🔒</div>
+            <div class="alert-message" id="custom-alert-text">المحتوى مغلق حالياً...</div>
+            <button class="alert-btn" onclick="closeCustomAlert()">مفهوم</button>
+        </div>
+    </div>
+
     <div id="screen-intro" onclick="proceedToDashboard()">
         <div class="intro-icon">🕋</div>
         <h1 class="intro-title">عيد أضحى مبارك</h1>
@@ -180,13 +206,32 @@
             </div>
 
             <div class="btn-group">
-                <button class="pulse-btn" onclick="openFingerprintScreen()"><span>🔒 بصمة العيد</span></button>
+                <button class="pulse-btn" onclick="openFingerprintScreen()"><span>👆 بصمة العيد</span></button>
                 <button class="action-btn" onclick="openLetterScreen()"><span>✉️</span> <span id="btn-msg-text">رسالة لكِ</span></button>
                 <button class="action-btn" onclick="openGalleryScreen()" style="border-color: #10b981; color: #059669;"><span>📸</span> ألبوم العيد</button>
+                <button class="action-btn" onclick="openEidiyaScreen()" style="border-color: #fbbf24; color: #d97706; font-weight: 800;"><span>🎁</span> استلم عيديتك</button>
             </div>
 
             <div style="color: #059669; font-weight: 700; font-size: 13px; margin-top: 10px;">إلى <span class="dynamic-name">فلانه</span> <span id="target-pronoun">الغالية</span></div>
         </div>
+    </div>
+
+    <div id="screen-eidiya">
+        <div class="floating-back-arrow" onclick="closeEidiyaScreen()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M19 12l-6-6M19 12l-6 6"/></svg>
+        </div>
+        <h2 class="scratch-title">عيدية العيد 🎁</h2>
+        <div class="scratch-subtitle">خربش الكارت عشان تكشف الكود بتاعك</div>
+        
+        <div class="scratch-container">
+            <div style="text-align: center;">
+                <div style="font-size: 12px; color: #666; font-weight: 700;">كود العيدية الخاص بك:</div>
+                <div class="scratch-code-box" id="eidiya-code-display">EID-GIFT</div>
+            </div>
+            <canvas id="scratch-canvas"></canvas>
+        </div>
+
+        <button id="send-eidiya-btn" onclick="sendEidiyaWhatsApp()">📲 أرسل الكود لاستلام العيدية</button>
     </div>
 
     <div id="screen-fingerprint">
@@ -194,7 +239,7 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M19 12l-6-6M19 12l-6 6"/></svg>
         </div>
         
-        <div id="fingerprint-status-text" class="pulse-smooth-text text-breathe" style="color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 30px; text-align: center; z-index: 20;">حطي بصمتك وافضلي ضاغطة 🔒</div>
+        <div id="fingerprint-status-text" class="pulse-smooth-text text-breathe" style="color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 30px; text-align: center; z-index: 20;">حطي بصمتك وافضلي ضاغطة 👆</div>
         
         <div class="blackhole-container" id="blackhole-target-area" onmousedown="startFingerprintHold(event)" ontouchstart="startFingerprintHold(event)" onmouseup="endFingerprintHold(event)" onmouseleave="endFingerprintHold(event)" ontouchend="endFingerprintHold(event)">
             <div class="accretion-disk" id="disk-element"></div>
@@ -240,13 +285,14 @@
 
     <script>
         let countdownInterval; 
+        let isEidTime = false; 
         let scanTimerTimeout;
         let isScanCompleted = false;
         
         // --- توقيت ليلة الوقفة (2026-05-25 الساعة 6 مساءً) ---
         const targetEidDate = new Date("2026-05-25T18:00:00"); 
 
-        let txtFingerprintInit = "حطي بصمتك وافضلي ضاغطة 🔒";
+        let txtFingerprintInit = "حطي بصمتك وافضلي ضاغطة 👆";
         let txtFingerprintError = "❌ شيلتي إيدك بدري!";
         let txtScanning = "جاري التحقق من الهوية ⏳";
 
@@ -254,6 +300,9 @@
             if (typeof clientCustomName !== 'undefined') {
                 document.getElementById('page-title').innerText = `عيد سعيد ${clientCustomName}`;
                 document.querySelectorAll('.dynamic-name').forEach(el => el.innerText = clientCustomName);
+            }
+            if (typeof clientEidiyaCode !== 'undefined') {
+                document.getElementById('eidiya-code-display').innerText = clientEidiyaCode;
             }
             if (typeof clientEnvelopeText !== 'undefined' && clientEnvelopeText.trim() !== '') {
                 document.getElementById('envelope-dynamic-text').innerHTML = clientEnvelopeText;
@@ -266,7 +315,7 @@
                 document.getElementById('gallery-click-text').innerText = 'اضغط لتثبيت البالونة والقراءة';
                 document.getElementById('reveal-final-text').innerText = 'كل عام وأنت بخير ❤️';
                 
-                txtFingerprintInit = "حط بصمتك وافضل ضاغت 🔒";
+                txtFingerprintInit = "حط بصمتك وافضل ضاغط 👆";
                 txtFingerprintError = "❌ شيلت إيدك بدري!";
                 txtScanning = "جاري التحقق من الهوية ⏳";
             }
@@ -283,11 +332,13 @@
                 const diff = targetEidDate - now;
 
                 if (diff > 0) {
+                    isEidTime = false;
                     document.getElementById('days').innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
                     document.getElementById('hours').innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
                     document.getElementById('minutes').innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
                     document.getElementById('seconds').innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
                 } else {
+                    isEidTime = true;
                     titleEl.style.display = 'none'; 
                     timerGrid.style.display = 'none'; 
                     msgEl.style.display = 'block';
@@ -355,6 +406,9 @@
                 });
             });
         }
+
+        function triggerCustomAlert(msg) { document.getElementById('custom-alert-text').innerText = msg; document.getElementById('custom-alert-modal').style.display = 'flex'; }
+        function closeCustomAlert() { document.getElementById('custom-alert-modal').style.display = 'none'; }
         
         function toggleEnvelope() { 
             const env = document.getElementById('envelope');
@@ -398,6 +452,73 @@
             
             document.querySelectorAll('.balloon-wrapper.paused-balloon').forEach(b => b.classList.remove('paused-balloon'));
             g.style.opacity = 0; setTimeout(() => { g.style.display = 'none'; m.style.display = 'flex'; setTimeout(() => m.style.opacity = 1, 50); }, 800);
+        }
+
+        let canvas, ctx, isDrawing = false;
+        function initScratchCard() {
+            canvas = document.getElementById('scratch-canvas');
+            ctx = canvas.getContext('2d');
+            canvas.width = 300; canvas.height = 150;
+            
+            ctx.fillStyle = '#a7f3d0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.font = '20px Cairo';
+            ctx.fillStyle = '#059669';
+            ctx.textAlign = 'center';
+            ctx.fillText('اخربش هنا لاستخراج العيدية', canvas.width/2, canvas.height/2 + 7);
+            
+            ctx.globalCompositeOperation = 'destination-out';
+            
+            canvas.addEventListener('mousedown', startScratch);
+            canvas.addEventListener('touchstart', startScratch, {passive: false});
+            canvas.addEventListener('mousemove', scratch);
+            canvas.addEventListener('touchmove', scratch, {passive: false});
+            window.addEventListener('mouseup', endScratch);
+            window.addEventListener('touchend', endScratch);
+        }
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        function startScratch(e) { isDrawing = true; scratch(e); }
+        function endScratch() { isDrawing = false; checkScratchCompletion(); }
+        function scratch(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            const pos = getMousePos(e);
+            ctx.beginPath(); ctx.arc(pos.x, pos.y, 20, 0, Math.PI * 2); ctx.fill();
+        }
+
+        function checkScratchCompletion() {
+            const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            let transparentPixels = 0;
+            for (let i = 3; i < pixels.length; i += 4) { if (pixels[i] === 0) transparentPixels++; }
+            if ((transparentPixels / (pixels.length / 4)) * 100 > 40) { 
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                document.getElementById('scratch-canvas').style.pointerEvents = 'none';
+                document.getElementById('send-eidiya-btn').style.display = 'block';
+            }
+        }
+
+        function openEidiyaScreen() {
+            const m = document.getElementById('screen-main'), s = document.getElementById('screen-eidiya');
+            m.style.opacity = 0; setTimeout(() => { m.style.display = 'none'; s.style.display = 'flex'; setTimeout(() => s.style.opacity = 1, 50); initScratchCard(); }, 800);
+        }
+
+        function closeEidiyaScreen() {
+            const m = document.getElementById('screen-main'), s = document.getElementById('screen-eidiya');
+            s.style.opacity = 0; setTimeout(() => { s.style.display = 'none'; m.style.display = 'flex'; setTimeout(() => m.style.opacity = 1, 50); }, 800);
+        }
+
+        function sendEidiyaWhatsApp() {
+            const code = typeof clientEidiyaCode !== 'undefined' ? clientEidiyaCode : 'EID-GIFT';
+            const msg = encodeURIComponent(`${code}`);
+            const myNumber = "201205508759"; 
+            window.open(`https://wa.me/${myNumber}?text=${msg}`, '_blank');
         }
 
         function startFingerprintHold(e) {
