@@ -1,6 +1,6 @@
 const clientCustomName = "ايمان";
 const clientGender = "f";
-const clientEidiyaCode = "EID-500-VIP";
+const clientEidiyaCode = "9AWDxDzDOCidgodX";
 const clientEnvelopeText = `كل عام وانتي بكل الخير يا ايمي
 رب يحفظك ويسعدك
 والعيد الجاي تكوني في شقتك واعيد عليكي فيها حبيبتي باذن الله 
@@ -8,7 +8,7 @@ const clientEnvelopeText = `كل عام وانتي بكل الخير يا ايم
 const clientMemories = [
     {
         "photo": "photo1.jpg",
-        "caption": "ضحكتها  تسعد القلب"
+        "caption"بنت قلبي"
     },
     {
         "photo": "photo2.jpg",
@@ -40,7 +40,7 @@ const clientMemories = [
     },
     {
         "photo": "photo9.jpg",
-        "caption": "بنت قلبي"
+        "caption": "ضحكتها  تسعد القلب"
     },
     {
         "photo": "photo10.jpg",
