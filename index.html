@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">عيد أضحى مبارك ✨</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;800&display=swap" rel="stylesheet">
+    <script src="data.js"></script>
+
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Cairo', sans-serif; background-color: #e6f4ea; overflow-x: hidden; background-attachment: fixed; }
+        
+        /* 1. Loading Screen */
+        #screen-loading { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: #e6f4ea; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; transition: opacity 0.8s ease; }
+        .loading-img { font-size: 80px; margin-bottom: 10px; animation: bounce 2s infinite; }
+        .loading-track { width: 250px; height: 8px; background-color: rgba(255, 255, 255, 0.5); border-radius: 10px; overflow: hidden; margin-top: 20px; }
+        .loading-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #10b981, #059669); border-radius: 10px; animation: fillProgress 2.5s forwards ease-in-out; }
+        @keyframes fillProgress { 100% { width: 100%; } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        
+        /* 2. Intro Screen */
+        #screen-intro { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: #e6f4ea; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 900; text-align: center; opacity: 0; transition: opacity 0.8s ease; cursor: pointer; }
+        .intro-icon { font-size: 100px; margin-bottom: 20px; filter: drop-shadow(0 10px 15px rgba(5, 150, 105, 0.2)); }
+        .intro-title { font-size: 2.5rem; color: #059669; font-weight: 800; margin-bottom: 10px; }
+        .intro-subtitle { font-size: 2rem; color: #4a4a4a; margin-bottom: 30px; font-weight: 700; }
+        
+        /* 3. Main Screen */
+        #screen-main { display: none; min-height: 100vh; padding: 40px 20px; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.8s ease; }
+        
+        .dashboard-container { background-color: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 30px; padding: 40px 20px; width: 100%; max-width: 450px; text-align: center; box-shadow: 0 15px 35px rgba(5, 150, 105, 0.1), 0 0 10px rgba(255,255,255,0.4) inset; border: 2px solid rgba(255, 255, 255, 0.6); position: relative; }
+        
+        .profile-wrapper { position: relative; width: 140px; height: 140px; margin: 10px auto 20px; transform-style: preserve-3d; perspective: 1000px; }
+        .profile-circle { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #fff; box-shadow: 0 10px 25px rgba(5, 150, 105, 0.15); background-color: #fff; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: transform 0.5s, box-shadow 0.5s; }
+        .profile-circle img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .main-heading { font-size: 2.4rem; color: #059669; margin: 10px 0 25px 0; font-weight: 800; }
+        
+        /* Countdown Box */
+        .countdown-box { background: rgba(255, 255, 255, 0.6); border-radius: 20px; padding: 15px 10px; margin-bottom: 25px; border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: inset 0 2px 4px rgba(255,255,255,0.5), 0 4px 15px rgba(5, 150, 105, 0.05); }
+        .countdown-timer { display: flex; justify-content: center; gap: 8px; direction: ltr; }
+        .time-block { background: white; padding: 8px 0; border-radius: 12px; min-width: 60px; box-shadow: 0 4px 10px rgba(5, 150, 105, 0.06); border: 1px solid rgba(16, 185, 129, 0.1); }
+        .time-block span { display: block; font-size: 20px; font-weight: 800; color: #059669; line-height: 1.2; }
+        .time-block label { font-size: 11px; color: #666; font-weight: 700; margin-top: 2px; display: block; }
+        .countdown-msg { font-size: 15px; font-weight: 800; color: #059669; line-height: 1.6; padding: 5px; }
+
+        /* Buttons */
+        .btn-group { display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px; }
+        .pulse-btn { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 15px 20px; font-size: 15px; font-weight: 700; border-radius: 25px; cursor: pointer; box-shadow: 0 8px 15px rgba(5, 150, 105, 0.25); transition: transform 0.2s; }
+        .pulse-btn:active { transform: scale(0.95); }
+        .action-btn { background-color: #fff; color: #059669; border: 2px solid #a7f3d0; padding: 14px 20px; font-size: 15px; font-weight: 700; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.08); transition: transform 0.2s, background-color 0.2s; }
+        .action-btn:active { transform: scale(0.95); background-color: #f0fdf4; }
+        
+        /* Floating Back Arrow */
+        .floating-back-arrow { position: absolute; top: 20px; left: 15px; width: 45px; height: 45px; background-color: rgba(255, 255, 255, 0.85); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #059669; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.15); backdrop-filter: blur(5px); z-index: 2000; transition: transform 0.3s; }
+        .floating-back-arrow:active { transform: scale(0.9); }
+
+        /* Custom Alert */
+        #custom-alert-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 3000; display: none; justify-content: center; align-items: center; padding: 20px; }
+        .alert-popup { background: #fff; border-radius: 22px; max-width: 350px; width: 100%; padding: 25px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 2px solid #a7f3d0; animation: alertPop 0.3s forwards; }
+        @keyframes alertPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .alert-message { color: #333; font-size: 15px; font-weight: 700; line-height: 1.8; margin: 15px 0 25px; }
+        .alert-btn { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 10px 30px; font-weight: 800; font-size: 15px; border-radius: 20px; cursor: pointer; }
+
+        /* ---------------------------------------------------- */
+        /* 4. Envelope Screen */
+        /* ---------------------------------------------------- */
+        #screen-letter { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: radial-gradient(circle, #10b981 0%, #064e3b 100%); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 1500; opacity: 0; transition: opacity 0.8s ease; }
+        
+        .envelope-container { position: relative; width: 320px; height: 200px; margin: 30px auto 0 auto; perspective: 1500px; z-index: 20; }
+        .envelope-wrapper { position: relative; width: 100%; height: 100%; background-color: #047857; border-radius: 8px; box-shadow: 0 20px 45px rgba(0,0,0,0.4); cursor: pointer; transform-style: preserve-3d; }
+        
+        .envelope-flap { position: absolute; top: 0; left: 0; width: 100%; height: 120px; background-color: #059669; clip-path: polygon(0 0, 100% 0, 50% 100%); transform-origin: top; z-index: 4; transform: rotateX(0deg); filter: drop-shadow(0 4px 3px rgba(0,0,0,0.2)); transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.6s, z-index 0s 0.6s; }
+        .envelope-wrapper.open .envelope-flap { transform: rotateX(180deg); z-index: 1; filter: none; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0s, z-index 0s 0.2s; }
+        
+        .envelope-pocket { position: absolute; bottom: 0; left: 0; width: 100%; height: 130px; background-color: #065f46; clip-path: polygon(0 20%, 50% 12%, 100% 20%, 100% 100%, 0 100%); z-index: 3; border-radius: 0 0 8px 8px; filter: drop-shadow(0 -4px 8px rgba(0,0,0,0.15)); }
+        
+        .env_letter_geometric { position: absolute; bottom: 10px; left: 15px; width: 290px; height: 90px; background-color: #f8fafc; border-radius: 8px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 2; transform: translateY(0); overflow: hidden; border: 1px solid #cbd5e1; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0s, height 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0s, padding 0.6s ease 0s, z-index 0s 0.3s; }
+        .envelope-wrapper.open .env_letter_geometric { transform: translateY(-105px); height: 350px; padding: 20px; z-index: 5; box-shadow: 0 15px 40px rgba(0,0,0,0.4); overflow-y: auto; transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.4s, height 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.4s, padding 0.7s ease 0.4s, z-index 0s 0.6s; }
+        
+        .letter-text_geometric { font-size: 15px; line-height: 1.8; color: #1e293b; text-align: justify; opacity: 0; font-weight: 600; transition: opacity 0.3s ease 0s; }
+        .envelope-wrapper.open .letter-text_geometric { opacity: 1; transition: opacity 0.4s ease 0.9s; }
+        
+        .envelope-seal_geometric { position: absolute; top: 100px; left: calc(50% - 24px); width: 48px; height: 48px; background-color: #fbbf24; border-radius: 50%; z-index: 5; display: flex; align-items: center; justify-content: center; color: #78350f; font-size: 22px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: opacity 0.2s, transform 0.3s; transform: scale(1); }
+        .envelope-wrapper.open .envelope-seal_geometric { opacity: 0; pointer-events: none; }
+        
+        .bg-hearts { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; overflow: hidden; z-index: 1; }
+        .bg-heart { position: absolute; color: rgba(16, 185, 129, 0.2); font-size: 24px; animation: floatUp 6s infinite linear; }
+        @keyframes floatUp { 0% { transform: translateY(105vh) rotate(0deg) scale(0.8); opacity: 0; } 50% { opacity: 0.8; } 100% { transform: translateY(-10vh) rotate(360deg) scale(1.3); opacity: 0; } }
+        
+        /* ---------------------------------------------------- */
+        /* 5. Balloons Gallery */
+        /* ---------------------------------------------------- */
+        #screen-gallery { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); display: none; flex-direction: column; align-items: center; z-index: 1600; opacity: 0; transition: opacity 0.8s ease; overflow: hidden; }
+        .gallery-header { text-align: center; padding: 25px 20px 15px; z-index: 20; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .gallery-title { color: #059669; font-size: 1.5rem; font-weight: 800; }
+        .gallery-container-box { position: relative; width: 100%; height: 100%; overflow: hidden; }
+        
+        .balloon-wrapper { position: absolute; top: 100vh; display: flex; flex-direction: column; align-items: center; animation: floatUpward var(--dur, 25s) linear infinite; animation-delay: var(--delay, 0s); cursor: pointer; z-index: 10; transform: translateX(-50%); transition: transform 0.3s; }
+        @keyframes floatUpward { 0% { top: 105vh; } 100% { top: -40vh; } }
+        
+        .balloon-wrapper.paused-balloon { animation-play-state: paused !important; z-index: 9999 !important; transform: translateX(-50%) scale(1.2); }
+        
+        .balloon-inner { display: flex; flex-direction: column; align-items: center; animation: balloonSway var(--sway-dur, 4s) ease-in-out infinite alternate; animation-delay: var(--sway-delay, 0s); }
+        @keyframes balloonSway { 0% { transform: translateX(-4px) rotate(-2deg); } 100% { transform: translateX(4px) rotate(2deg); } }
+        .balloon-wrapper.paused-balloon .balloon-inner { animation-play-state: paused; }
+        
+        .balloon-emoji { font-size: 40px; line-height: 1; margin-bottom: -5px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); }
+        .balloon-string { width: 1.5px; height: 35px; background: linear-gradient(to bottom, #10b981, rgba(255,255,255,0.05)); margin-bottom: -1px; }
+        
+        .photo-frame { background-color: #fff; padding: 6px 6px 12px 6px; border-radius: 8px; box-shadow: 0 8px 15px rgba(5, 150, 105, 0.12); border: 1.5px solid rgba(110, 231, 183, 0.5); text-align: center; width: 95px; }
+        .balloon-wrapper.paused-balloon .photo-frame { box-shadow: 0 15px 30px rgba(5, 150, 105, 0.3); border-color: #10b981; }
+        .photo-frame img { width: 100%; object-fit: cover; border-radius: 4px; background-color: #fafafa; height: 90px; pointer-events: none; }
+        .photo-caption { margin-top: 6px; color: #059669; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11px; pointer-events: none; }
+
+        .confetti-mini { position: fixed; width: 8px; height: 8px; border-radius: 50%; pointer-events: none; z-index: 999; animation: fallDownConfetti 4s forwards linear; }
+        @keyframes fallDownConfetti { 0% { transform: translateY(-10px) rotate(0deg); opacity: 1; } 100% { transform: translateY(105vh) rotate(360deg); opacity: 0; } }
+
+        /* 6. Cosmic Fingerprint Screen */
+        #screen-fingerprint { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: #022c22; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 1400; opacity: 0; transition: opacity 0.8s ease; overflow: hidden; }
+        .pulse-smooth-text { transition: all 0.3s ease; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px #10b981; }
+        .text-breathe { animation: textPulse 2.5s infinite ease-in-out; }
+        @keyframes textPulse { 0%, 100% { opacity: 0.5; transform: scale(0.96); } 50% { opacity: 1; transform: scale(1.02); } }
+        
+        .blackhole-container { position: relative; width: 260px; height: 260px; margin: 30px auto; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+        .blackhole { width: 100px; height: 100px; background: #000; border-radius: 50%; box-shadow: 0 0 25px 5px #000, 0 0 45px 15px #10b981, 0 0 85px 25px #fbbf24, 0 0 150px 40px #fff; position: relative; z-index: 10; transition: all 0.4s; }
+        .accretion-disk { position: absolute; width: 240px; height: 240px; border-radius: 50%; border: 3px dashed rgba(16, 185, 129, 0.7); background: radial-gradient(circle, transparent 35%, rgba(251, 191, 36, 0.3) 60%, rgba(16, 185, 129, 0.1) 80%, transparent 100%); animation: spinBlackhole 6s linear infinite; z-index: 5; }
+        @keyframes spinBlackhole { 100% { transform: rotate(360deg); } }
+        
+        .cosmic-particle { position: absolute; width: 5px; height: 5px; background: #fff; border-radius: 50%; pointer-events: none; z-index: 8; opacity: 0; animation: pullToCenter 2.2s infinite linear; }
+        @keyframes pullToCenter { 0% { transform: rotate(var(--angle)) translateX(110px) scale(1); opacity: 0; } 15% { opacity: 0.9; } 85% { opacity: 0.9; } 100% { transform: rotate(calc(var(--angle) + 220deg)) translateX(0px) scale(0.1); opacity: 0; } }
+        
+        .blackhole.scanning-active { animation: wildGlow 1s infinite ease-in-out; transform: scale(0.85); box-shadow: 0 0 35px 8px #000, 0 0 65px 25px #10b981, 0 0 115px 40px #f59e0b, 0 0 200px 60px #fff; }
+        @keyframes wildGlow { 0%, 100% { transform: scale(0.85); } 50% { transform: scale(0.92); } }
+        
+        .blackhole.destroyed { animation: implodeExplode 1.4s forwards cubic-bezier(0.6, -0.28, 0.735, 0.045); pointer-events: none; }
+        @keyframes implodeExplode {
+            0% { transform: scale(0.85); }
+            35% { transform: scale(1.4); background: #fff; box-shadow: 0 0 200px 50px #fff, 0 0 100px 30px #10b981; }
+            65% { transform: scale(0.01); background: #000; box-shadow: 0 0 30px #000; opacity: 1; }
+            85% { transform: scale(3); background: #fff; box-shadow: 0 0 350px 100px #fff, 0 0 180px 40px #10b981; opacity: 0.95; }
+            100% { transform: scale(0); opacity: 0; display: none; }
+        }
+        
+        .reveal-photo-box { display: none; flex-direction: column; align-items: center; opacity: 0; transform: scale(0.5); transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-top: 20px; z-index: 100; }
+        .reveal-photo-box.show { display: flex; opacity: 1; transform: scale(1); }
+        .reveal-photo-box img { width: 170px; height: 170px; border-radius: 50%; border: 5px solid #fff; box-shadow: 0 15px 35px rgba(5, 150, 105, 0.4); object-fit: cover; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <audio id="birthday-audio" src="music.mp3" loop></audio>
+    <audio id="background-audio" src="background.mp3" loop></audio>
+
+    <div id="screen-loading">
+        <div class="loading-img">🐑</div>
+        <div class="loading-track"><div class="loading-fill"></div></div>
+    </div>
+
+    <div id="custom-alert-modal">
+        <div class="alert-popup">
+            <div style="font-size: 35px;">🔒</div>
+            <div class="alert-message" id="custom-alert-text">المحتوى مغلق حالياً...</div>
+            <button class="alert-btn" onclick="closeCustomAlert()">مفهوم</button>
+        </div>
+    </div>
+
+    <div id="screen-intro" onclick="proceedToDashboard()">
+        <div class="intro-icon">🕋</div>
+        <h1 class="intro-title">عيد أضحى مبارك</h1>
+        <div class="intro-subtitle dynamic-name">فلانه</div>
+        <div style="color: #888; font-size: 14px; font-weight: 600; margin-top: 5px;" id="intro-click-text">اضغطي للدخول ✨</div>
+    </div>
+
+    <div id="screen-main">
+        <div class="dashboard-container">
+            <div class="profile-wrapper">
+                <div class="profile-circle">
+                    <img src="gannah.jpg" alt="Profile" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII='; this.style.backgroundColor='#ddd';">
+                </div>
+            </div>
+
+            <h1 class="main-heading">عيد سعيد</h1>
+
+            <div class="countdown-box" id="countdown-box">
+                <div class="countdown-title" id="countdown-title" style="font-weight: 800; font-size: 14px; margin-bottom: 8px;">⏳ متبقي على ليلة الوقفة</div>
+                <div class="countdown-timer" id="countdown-timer">
+                    <div class="time-block"><span id="days">00</span><label>يوم</label></div>
+                    <div class="time-block"><span id="hours">00</span><label>ساعة</label></div>
+                    <div class="time-block"><span id="minutes">00</span><label>دقيقة</label></div>
+                    <div class="time-block"><span id="seconds">00</span><label>ثانية</label></div>
+                </div>
+                <div class="countdown-msg" id="countdown-evergreen-message" style="display: none;">كل عام وأنت بخير بمناسبة حلول ليلة وقفة العيد المبارك 🐑✨</div>
+            </div>
+
+            <div class="btn-group">
+                <button class="pulse-btn" onclick="openFingerprintScreen()"><span>🔒 بصمة العيد</span></button>
+                <button class="action-btn" onclick="openLetterScreen()"><span>✉️</span> <span id="btn-msg-text">رسالة لكِ</span></button>
+                <button class="action-btn" onclick="openGalleryScreen()" style="border-color: #10b981; color: #059669;"><span>📸</span> ألبوم العيد</button>
+            </div>
+
+            <div style="color: #059669; font-weight: 700; font-size: 13px; margin-top: 10px;">إلى <span class="dynamic-name">فلانه</span> <span id="target-pronoun">الغالية</span></div>
+        </div>
+    </div>
+
+    <div id="screen-fingerprint">
+        <div class="floating-back-arrow" onclick="backFromFingerprint()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M19 12l-6-6M19 12l-6 6"/></svg>
+        </div>
+        
+        <div id="fingerprint-status-text" class="pulse-smooth-text text-breathe" style="color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 30px; text-align: center; z-index: 20;">حطي بصمتك وافضلي ضاغطة 🔒</div>
+        
+        <div class="blackhole-container" id="blackhole-target-area" onmousedown="startFingerprintHold(event)" ontouchstart="startFingerprintHold(event)" onmouseup="endFingerprintHold(event)" onmouseleave="endFingerprintHold(event)" ontouchend="endFingerprintHold(event)">
+            <div class="accretion-disk" id="disk-element"></div>
+            <div id="particles-gravity-well"></div>
+            <div class="blackhole" id="blackhole-element"></div>
+        </div>
+
+        <div class="reveal-photo-box" id="reveal-box">
+            <img src="gannah.jpg" alt="Beautiful" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII='; this.style.backgroundColor='#ddd';">
+            <div style="color: #fff; font-size: 18px; font-weight: 800; margin-top: 20px; text-align: center;" id="reveal-final-text">كل عام وأنتِ بخير ❤️</div>
+        </div>
+    </div>
+
+    <div id="screen-letter">
+        <div class="floating-back-arrow" onclick="backToDashboard()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M19 12l-6-6M19 12l-6 6"/></svg>
+        </div>
+        <div class="bg-hearts" id="hearts-container"></div>
+        <h2 style="color: #fff; margin-bottom: 5px; font-weight: 800; z-index: 10;">معايدة خاصة</h2>
+        <div style="color: rgba(255,255,255,0.8); font-size: 14px; font-weight: 600; margin-bottom: 30px; z-index: 10;">إلى <span class="dynamic-name">فلانه</span></div>
+        <div class="envelope-container" onclick="toggleEnvelope()">
+            <div id="envelope" class="envelope-wrapper">
+                <div class="envelope-flap"></div>
+                <div class="envelope-pocket"></div>
+                <div class="envelope-seal_geometric">✨</div>
+                <div class="env_letter_geometric">
+                    <p class="letter-text_geometric" id="envelope-dynamic-text">كل عام وأنتِ بخير...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-gallery">
+        <div class="floating-back-arrow" onclick="closeGalleryScreen()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M19 12l-6-6M19 12l-6 6"/></svg>
+        </div>
+        <div class="gallery-header">
+            <h2 class="gallery-title">ألبوم ذكرياتنا ✨</h2>
+            <p id="gallery-click-text" style="color: #666; font-size: 12px; font-weight: 600; margin-top: 3px;">اضغطي على أي بالونة لتثبيتها وقراءتها</p>
+        </div>
+        <div class="gallery-container-box" id="gallery-box"></div>
+    </div>
+
+    <script>
+        let countdownInterval; 
+        let isEidTime = false; 
+        let scanTimerTimeout;
+        let isScanCompleted = false;
+        
+        // --- توقيت ليلة الوقفة (2026-05-25 الساعة 6 مساءً) ---
+        const targetEidDate = new Date("2026-05-25T18:00:00"); 
+
+        let txtFingerprintInit = "حطي بصمتك وافضلي ضاغطة 🔒";
+        let txtFingerprintError = "❌ شيلتي إيدك بدري!";
+        let txtScanning = "جاري التحقق من الهوية ⏳";
+        let txtLetterLocked = "الرسالة مغلقة حالياً، تفتح بعد مغرب ليلة الوقفة ✉️";
+        let txtGalleryLocked = "الألبوم مغلق حالياً، سيفتح بعد مغرب ليلة الوقفة 🌸";
+
+        function applyDynamicData() {
+            if (typeof clientCustomName !== 'undefined') {
+                document.getElementById('page-title').innerText = `عيد سعيد ${clientCustomName}`;
+                document.querySelectorAll('.dynamic-name').forEach(el => el.innerText = clientCustomName);
+            }
+            if (typeof clientEnvelopeText !== 'undefined' && clientEnvelopeText.trim() !== '') {
+                document.getElementById('envelope-dynamic-text').innerHTML = clientEnvelopeText;
+            }
+            
+            if (typeof clientGender !== 'undefined' && clientGender === 'm') {
+                document.getElementById('intro-click-text').innerText = 'اضغط للدخول ✨';
+                document.getElementById('btn-msg-text').innerText = 'رسالة لكَ';
+                document.getElementById('target-pronoun').innerText = 'الغالي';
+                document.getElementById('gallery-click-text').innerText = 'اضغط لتثبيت البالونة والقراءة';
+                document.getElementById('reveal-final-text').innerText = 'كل عام وأنت بخير ❤️';
+                
+                txtFingerprintInit = "حط بصمتك وافضل ضاغت 🔒";
+                txtFingerprintError = "❌ شيلت إيدك بدري!";
+                txtScanning = "جاري التحقق من الهوية ⏳";
+            }
+            document.getElementById('fingerprint-status-text').innerText = txtFingerprintInit;
+        }
+
+        function initInteractiveCountdown() {
+            const timerGrid = document.getElementById('countdown-timer');
+            const titleEl = document.getElementById('countdown-title');
+            const msgEl = document.getElementById('countdown-evergreen-message');
+            
+            function updateTimer() {
+                const now = new Date();
+                const diff = targetEidDate - now;
+
+                if (diff > 0) {
+                    isEidTime = false;
+                    document.getElementById('days').innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+                    document.getElementById('hours').innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                    document.getElementById('minutes').innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+                    document.getElementById('seconds').innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
+                } else {
+                    isEidTime = true;
+                    titleEl.style.display = 'none'; 
+                    timerGrid.style.display = 'none'; 
+                    msgEl.style.display = 'block';
+                    if(countdownInterval) clearInterval(countdownInterval);
+                }
+            }
+            updateTimer(); countdownInterval = setInterval(updateTimer, 1000);
+        }
+
+        function populateGallery() {
+            const galleryBox = document.getElementById('gallery-box');
+            if(!galleryBox) return;
+            galleryBox.innerHTML = ''; 
+            
+            let memoriesToUse = [];
+            if (typeof clientMemories !== 'undefined' && clientMemories.length > 0) memoriesToUse = clientMemories; 
+            else memoriesToUse = [{photo:'', caption:'تجربة 1'}, {photo:'', caption:'تجربة 2'}, {photo:'', caption:'تجربة 3'}];
+            
+            const total = memoriesToUse.length;
+            const lanesCount = 3; 
+            const dur = 26; 
+            
+            memoriesToUse.forEach((mem, index) => {
+                const balloon = document.createElement('div');
+                balloon.classList.add('balloon-wrapper');
+                
+                const laneIndex = index % lanesCount;
+                const baseLeft = laneIndex === 0 ? 20 : (laneIndex === 1 ? 50 : 80); 
+                
+                const randomOffset = (Math.random() * 12) - 6; 
+                balloon.style.left = `${baseLeft + randomOffset}%`;
+                
+                const balloonsInThisLane = Math.ceil(total / lanesCount);
+                const positionInLane = Math.floor(index / lanesCount);
+                
+                const timeSpacing = dur / balloonsInThisLane;
+                const randomTimeJitter = (Math.random() * 3) - 1.5;
+                const finalDelay = -(positionInLane * timeSpacing) + randomTimeJitter;
+                
+                balloon.style.setProperty('--delay', `${finalDelay}s`);
+                balloon.style.setProperty('--dur', `${dur}s`);
+                balloon.style.setProperty('--sway-dur', `${3 + Math.random()}s`);
+                balloon.style.setProperty('--sway-delay', `${Math.random() * -2}s`);
+                
+                const emojis = ['🐑', '🌙', '🕋', '✨', '🎈'];
+                balloon.innerHTML = `
+                    <div class="balloon-inner">
+                        <div class="balloon-emoji">${emojis[index % emojis.length]}</div>
+                        <div class="balloon-string"></div>
+                        <div class="photo-frame">
+                            <img src="${mem.photo}" alt="Memory" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII='; this.style.backgroundColor='#eee';">
+                            <div class="photo-caption">${mem.caption || '...'}</div>
+                        </div>
+                    </div>
+                `;
+                galleryBox.appendChild(balloon);
+                
+                balloon.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if(this.classList.contains('paused-balloon')) this.classList.remove('paused-balloon');
+                    else {
+                        document.querySelectorAll('.balloon-wrapper.paused-balloon').forEach(x=>x.classList.remove('paused-balloon')); 
+                        this.classList.add('paused-balloon');
+                    }
+                });
+            });
+        }
+
+        function triggerCustomAlert(msg) { document.getElementById('custom-alert-text').innerText = msg; document.getElementById('custom-alert-modal').style.display = 'flex'; }
+        function closeCustomAlert() { document.getElementById('custom-alert-modal').style.display = 'none'; }
+        
+        function toggleEnvelope() { 
+            const env = document.getElementById('envelope');
+            env.classList.toggle('open');
+        }
+
+        function proceedToDashboard() {
+            const i = document.getElementById('screen-intro'), m = document.getElementById('screen-main');
+            const bgAudio = document.getElementById('background-audio');
+            if (bgAudio) bgAudio.play().catch(()=>{});
+            
+            i.style.opacity = 0; setTimeout(() => { i.style.display = 'none'; m.style.display = 'flex'; setTimeout(() => { m.style.opacity = 1; triggerConfetti(); }, 50); }, 800);
+        }
+        function openFingerprintScreen() {
+            if (!isEidTime) return triggerCustomAlert(txtGalleryLocked.replace('الألبوم', 'المحتوى'));
+            const m = document.getElementById('screen-main'), f = document.getElementById('screen-fingerprint');
+            m.style.opacity = 0; setTimeout(() => { m.style.display = 'none'; f.style.display = 'flex'; setTimeout(() => f.style.opacity = 1, 50); }, 800);
+        }
+        function openLetterScreen() {
+            if (!isEidTime) return triggerCustomAlert(txtLetterLocked);
+            const m = document.getElementById('screen-main'), l = document.getElementById('screen-letter');
+            m.style.opacity = 0; setTimeout(() => { m.style.display = 'none'; l.style.display = 'flex'; setTimeout(() => l.style.opacity = 1, 50); }, 800);
+        }
+        function openGalleryScreen() {
+            if (!isEidTime) return triggerCustomAlert(txtGalleryLocked);
+            const m = document.getElementById('screen-main'), g = document.getElementById('screen-gallery'), a = document.getElementById('birthday-audio');
+            const bgAudio = document.getElementById('background-audio');
+            
+            if (bgAudio) bgAudio.pause();
+            
+            m.style.opacity = 0; setTimeout(() => { m.style.display = 'none'; g.style.display = 'flex'; setTimeout(() => { g.style.opacity = 1; if(a) a.play().catch(()=>{}); }, 50); }, 800);
+        }
+        function backToDashboard() {
+            const m = document.getElementById('screen-main'), l = document.getElementById('screen-letter');
+            document.getElementById('envelope').classList.remove('open');
+            l.style.opacity = 0; setTimeout(() => { l.style.display = 'none'; m.style.display = 'flex'; setTimeout(() => m.style.opacity = 1, 50); }, 800);
+        }
+        function closeGalleryScreen() {
+            const m = document.getElementById('screen-main'), g = document.getElementById('screen-gallery'), a = document.getElementById('birthday-audio');
+            const bgAudio = document.getElementById('background-audio');
+            
+            if(a) { a.pause(); a.currentTime = 0; }
+            if (bgAudio) bgAudio.play().catch(()=>{});
+            
+            document.querySelectorAll('.balloon-wrapper.paused-balloon').forEach(b => b.classList.remove('paused-balloon'));
+            g.style.opacity = 0; setTimeout(() => { g.style.display = 'none'; m.style.display = 'flex'; setTimeout(() => m.style.opacity = 1, 50); }, 800);
+        }
+
+        function startFingerprintHold(e) {
+            e.preventDefault(); if (isScanCompleted) return;
+            const bh = document.getElementById('blackhole-element'), text = document.getElementById('fingerprint-status-text');
+            bh.classList.add('scanning-active'); text.classList.remove('text-breathe'); text.innerText = txtScanning; text.style.color = "#10b981";
+            scanTimerTimeout = setTimeout(() => { isScanCompleted = true; triggerDestruction(); }, 3000);
+        }
+        function endFingerprintHold(e) {
+            if (isScanCompleted) return; e.preventDefault(); clearTimeout(scanTimerTimeout);
+            const bh = document.getElementById('blackhole-element'), text = document.getElementById('fingerprint-status-text');
+            bh.classList.remove('scanning-active'); text.innerText = txtFingerprintError; text.style.color = "#ef4444"; text.classList.add('text-breathe');
+            setTimeout(() => { if (!isScanCompleted) { text.innerText = txtFingerprintInit; text.style.color = "#fff"; } }, 1500);
+        }
+        function triggerDestruction() {
+            document.getElementById('blackhole-target-area').style.pointerEvents = 'none';
+            document.getElementById('fingerprint-status-text').innerText = "تمت المطابقة بنجاح ✨";
+            setTimeout(() => {
+                document.getElementById('blackhole-element').className = "blackhole destroyed";
+                document.getElementById('disk-element').style.display = 'none';
+                document.getElementById('fingerprint-status-text').style.display = 'none';
+                setTimeout(() => { document.getElementById('blackhole-target-area').style.display = 'none'; document.getElementById('reveal-box').classList.add('show'); triggerConfetti(); }, 1300);
+            }, 800);
+        }
+        function backFromFingerprint() {
+            const m = document.getElementById('screen-main'), f = document.getElementById('screen-fingerprint');
+            f.style.opacity = 0; setTimeout(() => { 
+                f.style.display = 'none'; m.style.display = 'flex'; isScanCompleted = false; clearTimeout(scanTimerTimeout);
+                document.getElementById('blackhole-target-area').style.display = 'flex'; document.getElementById('blackhole-target-area').style.pointerEvents = 'auto';
+                document.getElementById('blackhole-element').className = "blackhole"; document.getElementById('disk-element').style.display = 'block';
+                document.getElementById('fingerprint-status-text').style.display = 'block'; document.getElementById('fingerprint-status-text').innerText = txtFingerprintInit;
+                document.getElementById('reveal-box').classList.remove('show'); setTimeout(() => m.style.opacity = 1, 50); 
+            }, 800);
+        }
+
+        function triggerConfetti() { 
+            const colors = ['#10b981', '#059669', '#fbbf24', '#fff']; 
+            for (let i = 0; i < 30; i++) { 
+                const c = document.createElement('div'); c.classList.add('confetti-mini'); 
+                c.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; 
+                c.style.left = Math.random() * 100 + 'vw'; c.style.animationDelay = Math.random() * 2 + 's'; c.style.transform = `scale(${Math.random() * 0.5 + 0.5})`; 
+                document.body.appendChild(c); setTimeout(() => c.remove(), 5000); 
+            } 
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            applyDynamicData(); initInteractiveCountdown(); populateGallery();
+            
+            const pContainer = document.getElementById('particles-gravity-well');
+            for(let i=0; i<30; i++) { const p = document.createElement('div'); p.className='cosmic-particle'; p.style.setProperty('--angle', `${Math.random()*360}deg`); p.style.animationDelay = `${Math.random()*2}s`; pContainer.appendChild(p); }
+            
+            const hContainer = document.getElementById('hearts-container');
+            for (let i=0; i<15; i++) { const h = document.createElement('div'); h.className='bg-heart'; h.innerText= ['🌙','✨','🕋'][Math.floor(Math.random()*3)]; h.style.left=`${Math.random()*100}%`; h.style.animationDelay=`${Math.random()*5}s`; hContainer.appendChild(h); }
+
+            setTimeout(() => {
+                const ls = document.getElementById('screen-loading'), is = document.getElementById('screen-intro');
+                if(ls) { ls.style.opacity = 0; setTimeout(() => { ls.style.display = 'none'; if(is) { is.style.display = 'flex'; setTimeout(() => is.style.opacity = 1, 50); } }, 800); }
+            }, 2500);
+        });
+    </script>
+</body>
+</html>
