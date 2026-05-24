@@ -56,13 +56,6 @@
         .floating-back-arrow { position: absolute; top: 20px; left: 15px; width: 45px; height: 45px; background-color: rgba(255, 255, 255, 0.85); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #059669; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.15); backdrop-filter: blur(5px); z-index: 2000; transition: transform 0.3s; }
         .floating-back-arrow:active { transform: scale(0.9); }
 
-        /* Custom Alert */
-        #custom-alert-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 3000; display: none; justify-content: center; align-items: center; padding: 20px; }
-        .alert-popup { background: #fff; border-radius: 22px; max-width: 350px; width: 100%; padding: 25px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 2px solid #a7f3d0; animation: alertPop 0.3s forwards; }
-        @keyframes alertPop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .alert-message { color: #333; font-size: 15px; font-weight: 700; line-height: 1.8; margin: 15px 0 25px; }
-        .alert-btn { background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 10px 30px; font-weight: 800; font-size: 15px; border-radius: 20px; cursor: pointer; }
-
         /* ---------------------------------------------------- */
         /* 4. Envelope Screen */
         /* ---------------------------------------------------- */
@@ -158,14 +151,6 @@
         <div class="loading-track"><div class="loading-fill"></div></div>
     </div>
 
-    <div id="custom-alert-modal">
-        <div class="alert-popup">
-            <div style="font-size: 35px;">🔒</div>
-            <div class="alert-message" id="custom-alert-text">المحتوى مغلق حالياً...</div>
-            <button class="alert-btn" onclick="closeCustomAlert()">مفهوم</button>
-        </div>
-    </div>
-
     <div id="screen-intro" onclick="proceedToDashboard()">
         <div class="intro-icon">🕋</div>
         <h1 class="intro-title">عيد أضحى مبارك</h1>
@@ -255,7 +240,6 @@
 
     <script>
         let countdownInterval; 
-        let isEidTime = false; 
         let scanTimerTimeout;
         let isScanCompleted = false;
         
@@ -265,8 +249,6 @@
         let txtFingerprintInit = "حطي بصمتك وافضلي ضاغطة 🔒";
         let txtFingerprintError = "❌ شيلتي إيدك بدري!";
         let txtScanning = "جاري التحقق من الهوية ⏳";
-        let txtLetterLocked = "الرسالة مغلقة حالياً، تفتح بعد مغرب ليلة الوقفة ✉️";
-        let txtGalleryLocked = "الألبوم مغلق حالياً، سيفتح بعد مغرب ليلة الوقفة 🌸";
 
         function applyDynamicData() {
             if (typeof clientCustomName !== 'undefined') {
@@ -301,13 +283,11 @@
                 const diff = targetEidDate - now;
 
                 if (diff > 0) {
-                    isEidTime = false;
                     document.getElementById('days').innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
                     document.getElementById('hours').innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
                     document.getElementById('minutes').innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
                     document.getElementById('seconds').innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
                 } else {
-                    isEidTime = true;
                     titleEl.style.display = 'none'; 
                     timerGrid.style.display = 'none'; 
                     msgEl.style.display = 'block';
@@ -375,9 +355,6 @@
                 });
             });
         }
-
-        function triggerCustomAlert(msg) { document.getElementById('custom-alert-text').innerText = msg; document.getElementById('custom-alert-modal').style.display = 'flex'; }
-        function closeCustomAlert() { document.getElementById('custom-alert-modal').style.display = 'none'; }
         
         function toggleEnvelope() { 
             const env = document.getElementById('envelope');
@@ -392,17 +369,14 @@
             i.style.opacity = 0; setTimeout(() => { i.style.display = 'none'; m.style.display = 'flex'; setTimeout(() => { m.style.opacity = 1; triggerConfetti(); }, 50); }, 800);
         }
         function openFingerprintScreen() {
-            if (!isEidTime) return triggerCustomAlert(txtGalleryLocked.replace('الألبوم', 'المحتوى'));
             const m = document.getElementById('screen-main'), f = document.getElementById('screen-fingerprint');
             m.style.opacity = 0; setTimeout(() => { m.style.display = 'none'; f.style.display = 'flex'; setTimeout(() => f.style.opacity = 1, 50); }, 800);
         }
         function openLetterScreen() {
-            if (!isEidTime) return triggerCustomAlert(txtLetterLocked);
             const m = document.getElementById('screen-main'), l = document.getElementById('screen-letter');
             m.style.opacity = 0; setTimeout(() => { m.style.display = 'none'; l.style.display = 'flex'; setTimeout(() => l.style.opacity = 1, 50); }, 800);
         }
         function openGalleryScreen() {
-            if (!isEidTime) return triggerCustomAlert(txtGalleryLocked);
             const m = document.getElementById('screen-main'), g = document.getElementById('screen-gallery'), a = document.getElementById('birthday-audio');
             const bgAudio = document.getElementById('background-audio');
             
